@@ -2,13 +2,16 @@
 .env
 .env.local
 .env.*.local
+.env.production
 
 # Dependencies
 node_modules/
+frontend/node_modules/
 
 # Build output
 dist/
 build/
+frontend/dist/
 
 # Editor
 .vscode/
@@ -24,3 +27,13 @@ Thumbs.db
 backend/venv/
 backend/__pycache__/
 *.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Vercel
+.vercel
