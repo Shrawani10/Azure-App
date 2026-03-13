@@ -18,6 +18,7 @@ If the answer is not in the documents, say so honestly.`;
 }
 
 export default async function handler(req) {
+  try {
   if (req.method !== 'POST') {
     return new Response('Method Not Allowed', { status: 405 });
   }
@@ -29,6 +30,12 @@ export default async function handler(req) {
   const SEARCH_ENDPOINT = process.env.SEARCH_ENDPOINT || '';
   const SEARCH_INDEX    = process.env.SEARCH_INDEX    || '';
   const SEARCH_KEY      = process.env.SEARCH_KEY      || '';
+
+  if (!API_ENDPOINT || !API_KEY) {
+    return new Response(JSON.stringify({ error: 'Missing env vars', API_ENDPOINT: !!API_ENDPOINT, API_KEY: !!API_KEY }), {
+      status: 500, headers: { 'Content-Type': 'application/json' },
+    });
+  }
 
   const dataSource = (SEARCH_ENDPOINT && SEARCH_INDEX && SEARCH_KEY)
     ? [{
@@ -76,4 +83,9 @@ export default async function handler(req) {
       'Cache-Control': 'no-cache',
     },
   });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message, stack: e.stack }), {
+      status: 500, headers: { 'Content-Type': 'application/json' },
+    });
+  }
 }
