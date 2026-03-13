@@ -35,7 +35,8 @@ const ICONS = {
 
 export default function WelcomeScreen({ t, onSuggestionClick }) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-5 py-3 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto">
+    <div className="flex flex-col items-center justify-center min-h-full px-5 py-4">
       {/* Plant Icon */}
       <div className="w-20 h-20 rounded-full overflow-hidden border border-primary-100 mb-3 bg-primary-50 shrink-0">
         <img src="/Image.jpg" alt="Kisan logo" className="w-full h-full object-cover" />
@@ -67,6 +68,7 @@ export default function WelcomeScreen({ t, onSuggestionClick }) {
           </button>
         ))}
       </div>
+    </div>
     </div>
   );
 }
