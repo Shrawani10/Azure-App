@@ -35,22 +35,22 @@ const ICONS = {
 
 export default function WelcomeScreen({ t, onSuggestionClick }) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-5 py-6 overflow-y-auto">
+    <div className="flex-1 flex flex-col items-center justify-center px-5 py-3 overflow-y-auto">
       {/* Plant Icon */}
-      <div className="w-32 h-32 rounded-full overflow-hidden border border-primary-100 mb-5 bg-primary-50">
+      <div className="w-20 h-20 rounded-full overflow-hidden border border-primary-100 mb-3 bg-primary-50 shrink-0">
         <img src="/Image.jpg" alt="Kisan logo" className="w-full h-full object-cover" />
       </div>
 
       {/* Welcome text */}
-      <h2 className="text-2xl font-bold text-primary-700 text-center mb-2 leading-snug">
+      <h2 className="text-xl font-bold text-primary-700 text-center mb-1 leading-snug">
         {t.welcome}
       </h2>
-      <p className="text-gray-500 text-sm text-center max-w-sm leading-relaxed mb-8">
+      <p className="text-gray-500 text-sm text-center max-w-sm leading-relaxed mb-4">
         {t.subtitle}
       </p>
 
       {/* Suggestion cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full max-w-lg">
         {t.suggestions.map((suggestion, i) => (
           <button
             key={i}
