@@ -61,6 +61,14 @@ export default async function handler(req) {
     body: JSON.stringify(body),
   });
 
+  if (!azureResponse.ok) {
+    const errorText = await azureResponse.text();
+    return new Response(JSON.stringify({ error: errorText }), {
+      status: azureResponse.status,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
   return new Response(azureResponse.body, {
     status: azureResponse.status,
     headers: {
