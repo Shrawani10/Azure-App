@@ -63,7 +63,7 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-3 sm:p-6"
+      className="min-h-screen flex items-center justify-center p-2 sm:p-4"
       style={{
         background: 'linear-gradient(135deg, #c8e6c9 0%, #e8f5e9 40%, #f5fbf5 70%, #ffffff 100%)',
       }}
@@ -74,8 +74,8 @@ export default function App() {
         dir={isRTL ? 'rtl' : 'ltr'}
         style={{
           maxWidth: '680px',
-          height: 'min(88vh, 800px)',
-          minHeight: '500px',
+          height: 'min(92vh, 860px)',
+          minHeight: '0',
         }}
       >
         {/* Header */}
