@@ -58,7 +58,6 @@ export default async function handler(req, res) {
         ...messages,
       ],
       stream: true,
-      stream_options: { include_usage: true },
       temperature: 0.7,
       max_tokens: 1500,
       ...(dataSource && { data_sources: dataSource }),
