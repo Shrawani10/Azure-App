@@ -8,13 +8,10 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 5173,
       proxy: {
-        // Proxies /azure/* → https://proj-kisan.services.ai.azure.com/*
-        // Avoids CORS errors when the browser calls Azure directly
-        '/azure': {
-          target: env.VITE_API_BASE_URL || 'https://proj-kisan.services.ai.azure.com',
+        // Proxies /api/* → Vercel dev server (vercel dev runs on port 3000)
+        '/api': {
+          target: 'http://localhost:3000',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/azure/, ''),
-          secure: true,
         },
       },
     },

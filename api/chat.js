@@ -1,10 +1,12 @@
+import { logConversation } from './logger.js';
+
 const LANGUAGE_NAMES = {
   hi: 'Hindi (हिंदी)',     en: 'English',
   mr: 'Marathi (मराठी)',    te: 'Telugu (తెలుగు)',
   ta: 'Tamil (தமிழ்)',      kn: 'Kannada (ಕನ್ನಡ)',
   gu: 'Gujarati (ગુજરાતી)', ml: 'Malayalam (മലയാളം)',
   pa: 'Punjabi (ਪੰਜਾਬੀ)',   bn: 'Bengali (বাংলা)',
-  or: 'Odia (ଓଡ଼ིਆ)',
+  or: 'Odia (ଓଡ଼ିਆ)',
 };
 
 function systemPrompt(language) {
@@ -23,6 +25,7 @@ export default async function handler(req, res) {
 
   try {
     const { messages, language } = req.body;
+    const startTime = Date.now();
 
     const API_ENDPOINT    = process.env.API_ENDPOINT;
     const API_KEY         = process.env.API_KEY;
@@ -55,6 +58,7 @@ export default async function handler(req, res) {
         ...messages,
       ],
       stream: true,
+      stream_options: { include_usage: true },
       temperature: 0.7,
       max_tokens: 1500,
       ...(dataSource && { data_sources: dataSource }),
@@ -76,13 +80,45 @@ export default async function handler(req, res) {
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('X-Accel-Buffering', 'no');
 
+    // Collect chunks to extract the full assistant reply for logging
     const reader = azureResponse.body.getReader();
+    const decoder = new TextDecoder();
+    let rawChunks = '';
+
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
       res.write(value);
+      rawChunks += decoder.decode(value, { stream: true });
     }
     res.end();
+
+    // Parse SSE stream — extract assistant text and token usage
+    const parsedChunks = rawChunks
+      .split('\n')
+      .filter(line => line.startsWith('data: ') && line !== 'data: [DONE]')
+      .map(line => { try { return JSON.parse(line.slice(6)); } catch { return null; } })
+      .filter(Boolean);
+
+    const agentResponse = parsedChunks
+      .flatMap(parsed => parsed.choices || [])
+      .map(choice => choice?.delta?.content || '')
+      .join('');
+
+    // Token usage is sent in the last chunk by Azure when stream_options.include_usage is true
+    const usageChunk = parsedChunks.findLast(p => p.usage);
+    const tokens = usageChunk?.usage || null;
+
+    // Log the full conversation to Azure Blob Storage (fire-and-forget)
+    logConversation({
+      language,
+      messages,
+      agentResponse,
+      tokens,
+      durationMs: Date.now() - startTime,
+      status: 'success',
+    });
+
   } catch (e) {
     res.status(500).json({ error: e.message, stack: e.stack });
   }

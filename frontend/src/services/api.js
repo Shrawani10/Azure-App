@@ -24,7 +24,7 @@ export async function* streamChat({ messages, language, signal }) {
     let detail = '';
     try {
       const errBody = await response.json();
-      detail = errBody?.error?.message || errBody?.message || '';
+      detail = errBody?.error?.message || errBody?.error || errBody?.message || '';
     } catch {
       detail = await response.text().catch(() => '');
     }
