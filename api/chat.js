@@ -90,7 +90,6 @@ export default async function handler(req, res) {
       res.write(value);
       rawChunks += decoder.decode(value, { stream: true });
     }
-    res.end();
 
     // Parse SSE stream — extract assistant text and token usage
     const parsedChunks = rawChunks
@@ -104,12 +103,11 @@ export default async function handler(req, res) {
       .map(choice => choice?.delta?.content || '')
       .join('');
 
-    // Token usage is sent in the last chunk by Azure when stream_options.include_usage is true
     const usageChunk = parsedChunks.findLast(p => p.usage);
     const tokens = usageChunk?.usage || null;
 
-    // Log the full conversation to Azure Blob Storage (fire-and-forget)
-    logConversation({
+    // Await logging BEFORE res.end() — Vercel kills the function immediately after end()
+    await logConversation({
       language,
       messages,
       agentResponse,
@@ -117,6 +115,8 @@ export default async function handler(req, res) {
       durationMs: Date.now() - startTime,
       status: 'success',
     });
+
+    res.end();
 
   } catch (e) {
     res.status(500).json({ error: e.message, stack: e.stack });
