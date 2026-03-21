@@ -103,8 +103,16 @@ export default async function handler(req, res) {
       .map(choice => choice?.delta?.content || '')
       .join('');
 
-    const usageChunk = parsedChunks.findLast(p => p.usage);
-    const tokens = usageChunk?.usage || null;
+    // Azure RAG endpoint doesn't return token usage — estimate from text (~4 chars per token)
+    const inputText = systemPrompt(language) + messages.map(m => m.content).join('');
+    const estimatedInputTokens  = Math.ceil(inputText.length / 4);
+    const estimatedOutputTokens = Math.ceil(agentResponse.length / 4);
+    const tokens = {
+      prompt_tokens:     estimatedInputTokens,
+      completion_tokens: estimatedOutputTokens,
+      total_tokens:      estimatedInputTokens + estimatedOutputTokens,
+      estimated:         true,
+    };
 
     // Await logging BEFORE res.end() — Vercel kills the function immediately after end()
     await logConversation({
