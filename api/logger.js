@@ -5,15 +5,18 @@ const CONTAINER_NAME = 'rag-chat-logs';
 // GPT-4.1 Azure pricing (per 1M tokens)
 const PRICE_PER_1M_INPUT  = 2.00;  // USD
 const PRICE_PER_1M_OUTPUT = 8.00;  // USD
+const USD_TO_INR          = 84.0;  // Update this if exchange rate changes
 
 function calculateCost(tokens) {
   if (!tokens) return null;
   const inputCost  = (tokens.prompt_tokens     / 1_000_000) * PRICE_PER_1M_INPUT;
   const outputCost = (tokens.completion_tokens / 1_000_000) * PRICE_PER_1M_OUTPUT;
+  const totalUsd   = inputCost + outputCost;
   return {
     input_usd:  parseFloat(inputCost.toFixed(6)),
     output_usd: parseFloat(outputCost.toFixed(6)),
-    total_usd:  parseFloat((inputCost + outputCost).toFixed(6)),
+    total_usd:  parseFloat(totalUsd.toFixed(6)),
+    total_inr:  parseFloat((totalUsd * USD_TO_INR).toFixed(4)),
   };
 }
 

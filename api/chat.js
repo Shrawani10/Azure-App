@@ -103,15 +103,13 @@ export default async function handler(req, res) {
       .map(choice => choice?.delta?.content || '')
       .join('');
 
-    // Count tokens — try tiktoken (exact), fall back to char estimation if it fails on Vercel
+    // Count tokens using gpt-tokenizer (pure JS, no WASM — works on Vercel)
     const inputText = systemPrompt(language) + messages.map(m => m.content).join('');
     let tokens;
     try {
-      const { encodingForModel } = await import('js-tiktoken');
-      const enc      = encodingForModel('gpt-4o'); // GPT-4.1 uses same o200k_base encoding
-      const inputTok = enc.encode(inputText).length;
-      const outputTok = enc.encode(agentResponse).length;
-      enc.free();
+      const { encode } = await import('gpt-tokenizer');
+      const inputTok  = encode(inputText).length;
+      const outputTok = encode(agentResponse).length;
       tokens = { prompt_tokens: inputTok, completion_tokens: outputTok, total_tokens: inputTok + outputTok, estimated: false };
     } catch {
       const inputTok  = Math.ceil(inputText.length / 4);
