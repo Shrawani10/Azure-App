@@ -103,16 +103,21 @@ export default async function handler(req, res) {
       .map(choice => choice?.delta?.content || '')
       .join('');
 
-    // Estimate tokens (~4 chars per token) — Azure RAG endpoint doesn't return usage in stream
-    const inputText    = systemPrompt(language) + messages.map(m => m.content).join('');
-    const inputTokens  = Math.ceil(inputText.length / 4);
-    const outputTokens = Math.ceil(agentResponse.length / 4);
-    const tokens = {
-      prompt_tokens:     inputTokens,
-      completion_tokens: outputTokens,
-      total_tokens:      inputTokens + outputTokens,
-      estimated:         true,
-    };
+    // Count tokens — try tiktoken (exact), fall back to char estimation if it fails on Vercel
+    const inputText = systemPrompt(language) + messages.map(m => m.content).join('');
+    let tokens;
+    try {
+      const { encodingForModel } = await import('js-tiktoken');
+      const enc      = encodingForModel('gpt-4o'); // GPT-4.1 uses same o200k_base encoding
+      const inputTok = enc.encode(inputText).length;
+      const outputTok = enc.encode(agentResponse).length;
+      enc.free();
+      tokens = { prompt_tokens: inputTok, completion_tokens: outputTok, total_tokens: inputTok + outputTok, estimated: false };
+    } catch {
+      const inputTok  = Math.ceil(inputText.length / 4);
+      const outputTok = Math.ceil(agentResponse.length / 4);
+      tokens = { prompt_tokens: inputTok, completion_tokens: outputTok, total_tokens: inputTok + outputTok, estimated: true };
+    }
 
     // Await logging BEFORE res.end() — Vercel kills the function immediately after end()
     await logConversation({
