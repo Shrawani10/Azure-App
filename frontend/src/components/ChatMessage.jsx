@@ -27,7 +27,6 @@ function UserAvatar() {
 
 export default function ChatMessage({ message, t }) {
   const isUser = message.role === 'user';
-  const hasImage = message.imagePreview;
   const text = isUser ? message.displayText : message.content;
 
   if (isUser) {
@@ -35,15 +34,6 @@ export default function ChatMessage({ message, t }) {
       <div className="flex flex-row-reverse items-end gap-2 animate-slide-up px-4 py-1">
         <UserAvatar />
         <div className="max-w-[78%] flex flex-col items-end gap-1">
-          {hasImage && (
-            <div className="rounded-xl overflow-hidden border border-primary-200 max-w-xs">
-              <img
-                src={message.imagePreview}
-                alt="Uploaded crop"
-                className="max-w-full max-h-48 object-cover"
-              />
-            </div>
-          )}
           {text && (
             <div className="bg-primary-700 text-white px-4 py-3 rounded-2xl rounded-br-sm text-sm leading-relaxed shadow-sm">
               {text}
