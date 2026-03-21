@@ -55,10 +55,9 @@ export async function logConversation({ language, messages, agentResponse, token
       status,
       ...(tokens && {
         tokens: {
-          input:     tokens.prompt_tokens,
-          output:    tokens.completion_tokens,
-          total:     tokens.total_tokens,
-          estimated: tokens.estimated ?? false,
+          input:  tokens.prompt_tokens,
+          output: tokens.completion_tokens,
+          total:  tokens.total_tokens,
         },
       }),
       ...(cost && { cost_usd: cost }),

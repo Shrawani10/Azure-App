@@ -1,4 +1,5 @@
 import { logConversation } from './logger.js';
+import { encodingForModel } from 'js-tiktoken';
 
 const LANGUAGE_NAMES = {
   hi: 'Hindi (हिंदी)',     en: 'English',
@@ -103,15 +104,16 @@ export default async function handler(req, res) {
       .map(choice => choice?.delta?.content || '')
       .join('');
 
-    // Azure RAG endpoint doesn't return token usage — estimate from text (~4 chars per token)
-    const inputText = systemPrompt(language) + messages.map(m => m.content).join('');
-    const estimatedInputTokens  = Math.ceil(inputText.length / 4);
-    const estimatedOutputTokens = Math.ceil(agentResponse.length / 4);
+    // Count exact tokens using tiktoken (same tokenizer Azure OpenAI uses internally)
+    const enc = encodingForModel('gpt-4o'); // GPT-4.1 uses o200k_base, same as gpt-4o
+    const inputText    = systemPrompt(language) + messages.map(m => m.content).join('');
+    const inputTokens  = enc.encode(inputText).length;
+    const outputTokens = enc.encode(agentResponse).length;
+    enc.free();
     const tokens = {
-      prompt_tokens:     estimatedInputTokens,
-      completion_tokens: estimatedOutputTokens,
-      total_tokens:      estimatedInputTokens + estimatedOutputTokens,
-      estimated:         true,
+      prompt_tokens:     inputTokens,
+      completion_tokens: outputTokens,
+      total_tokens:      inputTokens + outputTokens,
     };
 
     // Await logging BEFORE res.end() — Vercel kills the function immediately after end()
