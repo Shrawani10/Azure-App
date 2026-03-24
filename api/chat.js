@@ -104,7 +104,9 @@ export default async function handler(req, res) {
       .join('');
 
     // Count tokens using gpt-tokenizer (pure JS, no WASM — works on Vercel)
-    const inputText = systemPrompt(language) + messages.map(m => m.content).join('');
+    // Only count the current turn (last user message), not cumulative history
+    const lastUserMsg = [...messages].reverse().find(m => m.role === 'user');
+    const inputText = systemPrompt(language) + (lastUserMsg?.content || '');
     let tokens;
     try {
       const { encode } = await import('gpt-tokenizer');
