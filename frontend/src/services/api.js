@@ -6,13 +6,13 @@
  *   { type: 'citations', data:    Citation[] }
  */
 
-export async function* streamChat({ messages, language, signal }) {
+export async function* streamChat({ messages, language, sessionId, signal }) {
   let response;
   try {
     response = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages, language }),
+      body: JSON.stringify({ messages, language, sessionId }),
       signal,
     });
   } catch (err) {

@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { messages, language } = req.body;
+    const { messages, language, sessionId } = req.body;
     const startTime = Date.now();
 
     const API_ENDPOINT    = process.env.API_ENDPOINT;
@@ -120,6 +120,7 @@ export default async function handler(req, res) {
     // Await logging BEFORE res.end() — Vercel kills the function immediately after end()
     await logConversation({
       language,
+      sessionId,
       messages,
       agentResponse,
       tokens,

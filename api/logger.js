@@ -9,18 +9,49 @@ const USD_TO_INR          = 84.0;  // Update this if exchange rate changes
 
 function calculateCost(tokens) {
   if (!tokens) return null;
-  const inputCost  = (tokens.prompt_tokens     / 1_000_000) * PRICE_PER_1M_INPUT;
-  const outputCost = (tokens.completion_tokens / 1_000_000) * PRICE_PER_1M_OUTPUT;
-  const totalUsd   = inputCost + outputCost;
+  const inputCost  = (tokens.prompt_tokens     / 1_000_000) * PRICE_PER_1M_INPUT  * USD_TO_INR;
+  const outputCost = (tokens.completion_tokens / 1_000_000) * PRICE_PER_1M_OUTPUT * USD_TO_INR;
+  const totalInr   = inputCost + outputCost;
   return {
-    input_usd:  parseFloat(inputCost.toFixed(6)),
-    output_usd: parseFloat(outputCost.toFixed(6)),
-    total_usd:  parseFloat(totalUsd.toFixed(6)),
-    total_inr:  parseFloat((totalUsd * USD_TO_INR).toFixed(4)),
+    input_inr:  parseFloat(inputCost.toFixed(4)),
+    output_inr: parseFloat(outputCost.toFixed(4)),
+    total_inr:  parseFloat(totalInr.toFixed(4)),
   };
 }
 
-export async function logConversation({ language, messages, agentResponse, tokens, durationMs, status, error }) {
+// Phrases across all supported languages that indicate RAG found no relevant answer
+const NO_ANSWER_PHRASES = [
+  // English
+  'not in the documents', 'not available in', 'cannot find', "i don't know", 'no information',
+  // Hindi
+  'दस्तावेज़ों में नहीं', 'मुझे नहीं पता', 'जानकारी नहीं',
+  // Marathi
+  'कागदपत्रांमध्ये नाही', 'माहिती नाही',
+  // Telugu
+  'పత్రాలలో లేదు', 'తెలియదు',
+  // Tamil
+  'ஆவணங்களில் இல்லை', 'தெரியவில்லை',
+  // Kannada
+  'ದಾಖಲೆಗಳಲ್ಲಿ ಇಲ್ಲ', 'ತಿಳಿದಿಲ್ಲ',
+  // Gujarati
+  'દસ્તાવેજોમાં નથી', 'ખબર નથી',
+  // Malayalam
+  'രേഖകളിൽ ഇല്ല', 'അറിയില്ല',
+  // Punjabi
+  'ਦਸਤਾਵੇਜ਼ਾਂ ਵਿੱਚ ਨਹੀਂ', 'ਪਤਾ ਨਹੀਂ',
+  // Bengali
+  'নথিতে নেই', 'জানি না',
+  // Odia
+  'ଦଲିଲରେ ନାହିଁ', 'ଜାଣେ ନାହିଁ',
+];
+
+function detectNoAnswer(text) {
+  if (!text) return false;
+  const lower = text.toLowerCase();
+  return NO_ANSWER_PHRASES.some(phrase => lower.includes(phrase.toLowerCase()));
+}
+
+export async function logConversation({ language, sessionId, messages, agentResponse, tokens, durationMs, status, error }) {
   try {
     const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
     if (!connectionString) {
@@ -46,13 +77,15 @@ export async function logConversation({ language, messages, agentResponse, token
     const cost = calculateCost(tokens);
 
     // Build log entry — one JSON object per line (JSONL format)
+    // Only log the latest user question + assistant answer (not the full history)
+    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
     const logEntry = JSON.stringify({
       timestamp: new Date().toISOString(),
+      session_id: sessionId ?? null,
       language,
-      conversation: [
-        ...messages,
-        { role: 'assistant', content: agentResponse },
-      ],
+      question: lastUserMessage?.content ?? '',
+      answer: agentResponse,
+      no_answer_detected: detectNoAnswer(agentResponse),
       rag_used: true,
       duration_ms: durationMs,
       status,
@@ -64,7 +97,7 @@ export async function logConversation({ language, messages, agentResponse, token
           estimated: tokens.estimated ?? false,
         },
       }),
-      ...(cost && { cost_usd: cost }),
+      ...(cost && { cost_inr: cost }),
       ...(error && { error }),
     }) + '\n';
 

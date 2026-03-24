@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { streamChat } from '../services/api';
 
 /**
@@ -18,6 +18,7 @@ export function useChat(language) {
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState(null);
   const abortRef = useRef(null);
+  const sessionId = useMemo(() => crypto.randomUUID(), []);
 
   const sendMessage = useCallback(async (text) => {
     if (!text.trim() || isStreaming) return;
@@ -53,10 +54,12 @@ export function useChat(language) {
       for await (const item of streamChat({
         messages: apiHistory,
         language,
+        sessionId,
         signal: abortRef.current.signal,
       })) {
         if (item.type === 'text') {
-          const cleaned = item.content.replace(/\[doc\d+\]/gi, '');
+          // Strip [docN] refs and any leading comma/space before them
+          const cleaned = item.content.replace(/[,\s]*\[doc\d+\]/gi, '');
           setMessages(prev => {
             const copy = [...prev];
             const last = copy[copy.length - 1];
@@ -72,6 +75,23 @@ export function useChat(language) {
           });
         }
       }
+
+      // Post-stream: clean up orphaned punctuation left by citation removal
+      // e.g. "productivity , ." → "productivity."
+      setMessages(prev => {
+        const copy = [...prev];
+        const last = copy[copy.length - 1];
+        if (last?.role === 'assistant' && last.content) {
+          const fixed = last.content
+            .replace(/,\s*,/g, ',')    // double commas
+            .replace(/\s+,/g, ',')     // space before comma
+            .replace(/,\s*\./g, '.')   // ", ." → "."
+            .replace(/\s+\./g, '.')    // " ." → "."
+            .trim();
+          copy[copy.length - 1] = { ...last, content: fixed };
+        }
+        return copy;
+      });
     } catch (err) {
       if (err.name === 'AbortError') {
         // User cancelled — keep whatever was streamed so far
