@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { useSpeechRecognition } from '../hooks/useSpeechRecognition.js';
 
 function SendIcon() {
   return (
@@ -16,11 +17,49 @@ function StopIcon() {
   );
 }
 
-export default function ChatInput({ onSend, onStop, isStreaming, t }) {
+function MicIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <rect x="9" y="2" width="6" height="11" rx="3"/>
+      <path d="M5 10a7 7 0 0 0 14 0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+      <line x1="9" y1="21" x2="15" y2="21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+    </svg>
+  );
+}
+
+export default function ChatInput({ onSend, onStop, isStreaming, language, t }) {
   const [text, setText] = useState('');
   const textareaRef = useRef(null);
 
   const canSend = text.trim() && !isStreaming;
+
+  const handleTranscript = useCallback((transcript) => {
+    setText((prev) => {
+      const joined = prev.trim() ? prev.trim() + ' ' + transcript : transcript;
+      // Resize textarea to fit new text
+      requestAnimationFrame(() => {
+        const el = textareaRef.current;
+        if (el) {
+          el.style.height = 'auto';
+          el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+        }
+      });
+      return joined;
+    });
+    textareaRef.current?.focus();
+  }, []);
+
+  const { isListening, isSupported, startListening, stopListening } =
+    useSpeechRecognition({ onTranscript: handleTranscript });
+
+  const handleMicClick = useCallback(() => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening(language);
+    }
+  }, [isListening, startListening, stopListening, language]);
 
   const handleSubmit = useCallback(() => {
     if (!canSend) return;
@@ -51,12 +90,29 @@ export default function ChatInput({ onSend, onStop, isStreaming, t }) {
           value={text}
           onChange={handleTextChange}
           onKeyDown={handleKeyDown}
-          placeholder={t.inputPlaceholder}
+          placeholder={isListening ? (t.listening || 'Listening...') : t.inputPlaceholder}
           rows={1}
           className="flex-1 bg-transparent text-gray-800 text-sm placeholder-gray-400 resize-none outline-none leading-relaxed min-h-[24px] max-h-[120px] overflow-y-auto"
           style={{ height: '24px' }}
           disabled={isStreaming}
         />
+
+        {/* Mic button — only shown if browser supports speech recognition */}
+        {isSupported && !isStreaming && (
+          <button
+            type="button"
+            onClick={handleMicClick}
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all shrink-0 ${
+              isListening
+                ? 'bg-red-500 text-white animate-pulse'
+                : 'bg-gray-200 hover:bg-gray-300 text-gray-500'
+            }`}
+            title={isListening ? (t.stopListening || 'Stop listening') : (t.speak || 'Speak')}
+            aria-label={isListening ? (t.stopListening || 'Stop listening') : (t.speak || 'Speak')}
+          >
+            <MicIcon active={isListening} />
+          </button>
+        )}
 
         {isStreaming ? (
           <button

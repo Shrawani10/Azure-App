@@ -115,6 +115,7 @@ export default function App() {
           onSend={sendMessage}
           onStop={stopStreaming}
           isStreaming={isStreaming}
+          language={language}
           t={t}
         />
       </div>

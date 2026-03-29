@@ -31,6 +31,9 @@ export const TRANSLATIONS = {
     poweredBy: 'Powered by Microsoft Foundry (Secure Proxy)',
     error: 'कुछ गलत हुआ। कृपया पुनः प्रयास करें।',
     send: 'भेजें',
+    speak: 'बोलें',
+    listening: 'सुन रहा हूँ...',
+    stopListening: 'सुनना बंद करें',
     suggestions: [
       { icon: 'bug',    text: 'सेब के बागीचे में एफिड्स, माइट्स और एप्पल मैगट से बचाव कैसे करें?' },
       { icon: 'plant',  text: 'हिमाचल के ऊंचे पहाड़ी इलाकों में जुलाई-अगस्त में कौन सी सब्जियां उगाएं?' },
@@ -48,6 +51,9 @@ export const TRANSLATIONS = {
     poweredBy: 'Powered by Microsoft Foundry (Secure Proxy)',
     error: 'Something went wrong. Please try again.',
     send: 'Send',
+    speak: 'Speak',
+    listening: 'Listening...',
+    stopListening: 'Stop listening',
     suggestions: [
       { icon: 'bug',    text: 'How to control aphids, mites and apple maggots in apple orchards?' },
       { icon: 'plant',  text: 'Which off-season vegetables can be grown in high hill areas in July–August?' },
@@ -65,6 +71,9 @@ export const TRANSLATIONS = {
     poweredBy: 'Powered by Microsoft Foundry (Secure Proxy)',
     error: 'काहीतरी चुकले. कृपया पुन्हा प्रयत्न करा.',
     send: 'पाठवा',
+    speak: 'बोला',
+    listening: 'ऐकत आहे...',
+    stopListening: 'ऐकणे थांबवा',
     suggestions: [
       { icon: 'bug',    text: 'सफरचंद बागेत ऍफिड्स, माइट्स आणि ऍपल मॅगटचा प्रादुर्भाव कसा रोखायचा?' },
       { icon: 'plant',  text: 'डोंगराळ भागात जुलै-ऑगस्टमध्ये कोणत्या ऑफ-सीझन भाज्या घेता येतात?' },
@@ -82,6 +91,9 @@ export const TRANSLATIONS = {
     poweredBy: 'Powered by Microsoft Foundry (Secure Proxy)',
     error: 'کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔',
     send: 'بھیجیں',
+    speak: 'بولیں',
+    listening: 'سن رہا ہوں...',
+    stopListening: 'سننا بند کریں',
     suggestions: [
       { icon: 'bug',    text: 'سیب کے باغات میں افڈز، مائٹس اور ایپل میگٹ سے بچاؤ کیسے کریں؟' },
       { icon: 'plant',  text: 'پہاڑی علاقوں میں جولائی-اگست میں کون سی آف سیزن سبزیاں اگائی جا سکتی ہیں؟' },
@@ -99,6 +111,9 @@ export const TRANSLATIONS = {
     poweredBy: 'Powered by Microsoft Foundry (Secure Proxy)',
     error: 'ఏదో తప్పు జరిగింది. దయచేసి మళ్ళీ ప్రయత్నించండి.',
     send: 'పంపండి',
+    speak: 'మాట్లాడండి',
+    listening: 'వింటున్నాను...',
+    stopListening: 'ఆపండి',
     suggestions: [
       { icon: 'bug',    text: 'ఆపిల్ తోటలలో ఆఫిడ్స్, మైట్స్ మరియు యాపిల్ మాగట్ నివారణ ఎలా చేయాలి?' },
       { icon: 'plant',  text: 'కొండ ప్రాంతాలలో జూలై-ఆగస్టులో ఏ కూరగాయలు పండించవచ్చు?' },
@@ -116,6 +131,9 @@ export const TRANSLATIONS = {
     poweredBy: 'Powered by Microsoft Foundry (Secure Proxy)',
     error: 'ஏதோ தவறு நடந்தது. மீண்டும் முயற்சிக்கவும்.',
     send: 'அனுப்பு',
+    speak: 'பேசுங்கள்',
+    listening: 'கேட்கிறேன்...',
+    stopListening: 'நிறுத்து',
     suggestions: [
       { icon: 'bug',    text: 'ஆப்பிள் தோட்டங்களில் அஃபிட்ஸ், மைட்ஸ் மற்றும் ஆப்பிள் மாகட் கட்டுப்படுத்துவது எப்படி?' },
       { icon: 'plant',  text: 'மலைப்பகுதிகளில் ஜூலை-ஆகஸ்டில் எந்த காய்கறிகளை சீசன் அல்லாத நேரத்தில் பயிரிடலாம்?' },
@@ -133,6 +151,9 @@ export const TRANSLATIONS = {
     poweredBy: 'Powered by Microsoft Foundry (Secure Proxy)',
     error: 'ಏನೋ ತಪ್ಪಾಯಿತು. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.',
     send: 'ಕಳುಹಿಸಿ',
+    speak: 'ಮಾತನಾಡಿ',
+    listening: 'ಕೇಳುತ್ತಿದ್ದೇನೆ...',
+    stopListening: 'ನಿಲ್ಲಿಸಿ',
     suggestions: [
       { icon: 'bug',    text: 'ಸೇಬು ತೋಟಗಳಲ್ಲಿ ಅಫಿಡ್ಸ್, ಮೈಟ್ಸ್ ಮತ್ತು ಆಪಲ್ ಮ್ಯಾಗಟ್ ನಿಯಂತ್ರಣ ಹೇಗೆ?' },
       { icon: 'plant',  text: 'ಪರ್ವತ ಪ್ರದೇಶಗಳಲ್ಲಿ ಜುಲೈ-ಆಗಸ್ಟ್‌ನಲ್ಲಿ ಯಾವ ತರಕಾರಿಗಳನ್ನು ಬೆಳೆಯಬಹುದು?' },
@@ -150,6 +171,9 @@ export const TRANSLATIONS = {
     poweredBy: 'Powered by Microsoft Foundry (Secure Proxy)',
     error: 'કંઈક ખોટું થયું. કૃપા કરી ફરી પ્રયાસ કરો.',
     send: 'મોકલો',
+    speak: 'બોલો',
+    listening: 'સાંભળું છું...',
+    stopListening: 'બંધ કરો',
     suggestions: [
       { icon: 'bug',    text: 'સફરજનના બગીચામાં એફિડ્સ, માઇટ્સ અને એપલ મેગટ સામે કેવી રીતે રક્ષણ કરવું?' },
       { icon: 'plant',  text: 'ટેકરીઓ વિસ્તારમાં જુલાઈ-ઓગસ્ટ દરમિયાન ઓફ-સીઝન કઈ શાકભાજી ઉગાડી શકાય?' },
@@ -167,6 +191,9 @@ export const TRANSLATIONS = {
     poweredBy: 'Powered by Microsoft Foundry (Secure Proxy)',
     error: 'എന്തോ തകരാറ് സംഭവിച്ചു. ദയവായി വീണ്ടും ശ്രമിക്കൂ.',
     send: 'അയക്കുക',
+    speak: 'സംസാരിക്കൂ',
+    listening: 'കേൾക്കുന്നു...',
+    stopListening: 'നിർത്തുക',
     suggestions: [
       { icon: 'bug',    text: 'ആപ്പിൾ തോട്ടങ്ങളിൽ അഫിഡ്സ്, മൈറ്റ്സ്, ആപ്പിൾ മാഗട്ട് എന്നിവ നിയന്ത്രിക്കാൻ എന്ത് ചെയ്യണം?' },
       { icon: 'plant',  text: 'മലയോര പ്രദേശങ്ങളിൽ ജൂലൈ-ഓഗസ്റ്റ് മാസങ്ങളിൽ ഏതൊക്കെ പച്ചക്കറികൾ കൃഷി ചെയ്യാം?' },
@@ -184,6 +211,9 @@ export const TRANSLATIONS = {
     poweredBy: 'Powered by Microsoft Foundry (Secure Proxy)',
     error: 'ਕੁਝ ਗਲਤ ਹੋਇਆ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।',
     send: 'ਭੇਜੋ',
+    speak: 'ਬੋਲੋ',
+    listening: 'ਸੁਣ ਰਿਹਾ ਹਾਂ...',
+    stopListening: 'ਰੋਕੋ',
     suggestions: [
       { icon: 'bug',    text: 'ਸੇਬ ਦੇ ਬਾਗਾਂ ਵਿੱਚ ਐਫੀਡਜ਼, ਮਾਈਟਸ ਅਤੇ ਐਪਲ ਮੈਗਟ ਤੋਂ ਬਚਾਅ ਕਿਵੇਂ ਕਰੀਏ?' },
       { icon: 'plant',  text: 'ਪਹਾੜੀ ਇਲਾਕਿਆਂ ਵਿੱਚ ਜੁਲਾਈ-ਅਗਸਤ ਵਿੱਚ ਕਿਹੜੀਆਂ ਬੇਮੌਸਮੀ ਸਬਜ਼ੀਆਂ ਉਗਾਈਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ?' },
@@ -201,6 +231,9 @@ export const TRANSLATIONS = {
     poweredBy: 'Powered by Microsoft Foundry (Secure Proxy)',
     error: 'কিছু একটা ভুল হয়েছে। আবার চেষ্টা করুন।',
     send: 'পাঠান',
+    speak: 'বলুন',
+    listening: 'শুনছি...',
+    stopListening: 'থামান',
     suggestions: [
       { icon: 'bug',    text: 'আপেল বাগানে অ্যাফিডস, মাইটস ও আপেল ম্যাগট দমন করবেন কীভাবে?' },
       { icon: 'plant',  text: 'পাহাড়ি এলাকায় জুলাই-আগস্টে কোন অফ-সিজন সবজি চাষ করা যায়?' },
@@ -218,6 +251,9 @@ export const TRANSLATIONS = {
     poweredBy: 'Powered by Microsoft Foundry (Secure Proxy)',
     error: 'କିଛି ଭୁଲ ହୋଇଛି। ଦୟାକରି ପୁନଃ ଚେଷ୍ଟା କରନ୍ତୁ।',
     send: 'ପଠାନ୍ତୁ',
+    speak: 'କୁହନ୍ତୁ',
+    listening: 'ଶୁଣୁଛି...',
+    stopListening: 'ବନ୍ଦ କରନ୍ତୁ',
     suggestions: [
       { icon: 'bug',    text: 'ଆପଲ ବଗିଚାରେ ଆଫିଡ୍ସ, ମାଇଟ୍ସ ଓ ଆପଲ ମ୍ୟାଗଟ ନିୟନ୍ତ୍ରଣ ପାଇଁ କ\'ଣ କରିବେ?' },
       { icon: 'plant',  text: 'ପାର୍ବତ୍ୟ ଅଞ୍ଚଳରେ ଜୁଲାଇ-ଅଗଷ୍ଟରେ କେଉଁ ଅଫ-ସିଜନ ପନିପରିବା ଚାଷ ହୁଏ?' },
