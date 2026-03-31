@@ -1,6 +1,9 @@
 import { useState, useRef, useCallback } from 'react';
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition.js';
 
+// Separates confirmed text from live interim speech preview
+// e.g. confirmed="hello" + interim="world" → displays "hello world"
+
 function SendIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -29,26 +32,38 @@ function MicIcon() {
 }
 
 export default function ChatInput({ onSend, onStop, isStreaming, language, t }) {
-  const [text, setText] = useState('');
+  const [confirmedText, setConfirmedText] = useState('');
+  const [interimText, setInterimText] = useState('');
   const textareaRef = useRef(null);
 
-  const canSend = text.trim() && !isStreaming;
+  // What's shown in the textarea: confirmed words + live interim preview
+  const text = confirmedText + (interimText ? (confirmedText ? ' ' : '') + interimText : '');
+  const canSend = confirmedText.trim() && !isStreaming;
 
-  const handleTranscript = useCallback((transcript) => {
-    setText((prev) => {
-      const joined = prev.trim() ? prev.trim() + ' ' + transcript : transcript;
-      // Resize textarea to fit new text
-      requestAnimationFrame(() => {
-        const el = textareaRef.current;
-        if (el) {
-          el.style.height = 'auto';
-          el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-        }
-      });
-      return joined;
+  const resizeTextarea = useCallback(() => {
+    requestAnimationFrame(() => {
+      const el = textareaRef.current;
+      if (el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+      }
     });
-    textareaRef.current?.focus();
   }, []);
+
+  const handleTranscript = useCallback((transcript, type) => {
+    if (type === 'interim') {
+      setInterimText(transcript);
+    } else {
+      // Final result: commit to confirmed text, clear interim
+      setConfirmedText(prev => {
+        const joined = prev.trim() ? prev.trim() + ' ' + transcript : transcript;
+        return joined;
+      });
+      setInterimText('');
+    }
+    resizeTextarea();
+    textareaRef.current?.focus();
+  }, [resizeTextarea]);
 
   const { isListening, isSupported, startListening, stopListening } =
     useSpeechRecognition({ onTranscript: handleTranscript });
@@ -56,6 +71,7 @@ export default function ChatInput({ onSend, onStop, isStreaming, language, t }) 
   const handleMicClick = useCallback(() => {
     if (isListening) {
       stopListening();
+      setInterimText('');
     } else {
       startListening(language);
     }
@@ -63,10 +79,11 @@ export default function ChatInput({ onSend, onStop, isStreaming, language, t }) 
 
   const handleSubmit = useCallback(() => {
     if (!canSend) return;
-    onSend(text);
-    setText('');
+    onSend(confirmedText.trim());
+    setConfirmedText('');
+    setInterimText('');
     textareaRef.current?.focus();
-  }, [canSend, text, onSend]);
+  }, [canSend, confirmedText, onSend]);
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -76,7 +93,8 @@ export default function ChatInput({ onSend, onStop, isStreaming, language, t }) 
   }, [handleSubmit]);
 
   const handleTextChange = useCallback((e) => {
-    setText(e.target.value);
+    setConfirmedText(e.target.value);
+    setInterimText('');
     const el = e.target;
     el.style.height = 'auto';
     el.style.height = Math.min(el.scrollHeight, 120) + 'px';
@@ -92,7 +110,9 @@ export default function ChatInput({ onSend, onStop, isStreaming, language, t }) 
           onKeyDown={handleKeyDown}
           placeholder={isListening ? (t.listening || 'Listening...') : t.inputPlaceholder}
           rows={1}
-          className="flex-1 bg-transparent text-gray-800 text-sm placeholder-gray-400 resize-none outline-none leading-relaxed min-h-[24px] max-h-[120px] overflow-y-auto"
+          className={`flex-1 bg-transparent text-sm placeholder-gray-400 resize-none outline-none leading-relaxed min-h-[24px] max-h-[120px] overflow-y-auto ${
+            interimText ? 'text-gray-400 italic' : 'text-gray-800'
+          }`}
           style={{ height: '24px' }}
           disabled={isStreaming}
         />

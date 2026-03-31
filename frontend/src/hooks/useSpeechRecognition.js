@@ -22,6 +22,7 @@ const SpeechRecognition =
 export function useSpeechRecognition({ onTranscript }) {
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef(null);
+  const interimRef = useRef('');
   const isSupported = SpeechRecognition !== null;
 
   const stopListening = useCallback(() => {
@@ -29,6 +30,7 @@ export function useSpeechRecognition({ onTranscript }) {
       recognitionRef.current.stop();
       recognitionRef.current = null;
     }
+    interimRef.current = '';
     setIsListening(false);
   }, []);
 
@@ -42,25 +44,49 @@ export function useSpeechRecognition({ onTranscript }) {
 
     const recognition = new SpeechRecognition();
     recognition.lang = LANG_TO_BCP47[language] || 'hi-IN';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 3;
+    recognition.continuous = true;
 
     recognition.onstart = () => setIsListening(true);
 
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript.trim();
-      if (transcript) {
-        onTranscript(transcript);
+      let interimTranscript = '';
+      let finalTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        // Pick the longest alternative for better accuracy
+        let best = '';
+        for (let j = 0; j < event.results[i].length; j++) {
+          if (event.results[i][j].transcript.length > best.length) {
+            best = event.results[i][j].transcript;
+          }
+        }
+
+        if (event.results[i].isFinal) {
+          finalTranscript += best;
+        } else {
+          interimTranscript += best;
+        }
+      }
+
+      if (finalTranscript) {
+        interimRef.current = '';
+        onTranscript(finalTranscript.trim(), 'final');
+      } else if (interimTranscript) {
+        interimRef.current = interimTranscript;
+        onTranscript(interimTranscript.trim(), 'interim');
       }
     };
 
     recognition.onerror = () => {
+      interimRef.current = '';
       setIsListening(false);
       recognitionRef.current = null;
     };
 
     recognition.onend = () => {
+      interimRef.current = '';
       setIsListening(false);
       recognitionRef.current = null;
     };
