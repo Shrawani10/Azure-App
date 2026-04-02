@@ -45,9 +45,13 @@ export default async function handler(req, res) {
             endpoint: SEARCH_ENDPOINT,
             index_name: SEARCH_INDEX,
             authentication: { type: 'api_key', key: SEARCH_KEY },
-            query_type: 'simple',
+            query_type: 'vector',
             top_n_documents: 5,
             in_scope: true,
+            embedding_dependency: {
+              type: 'deployment_name',
+              deployment_name: 'text-embedding-3-small',
+            },
           },
         }]
       : undefined;
